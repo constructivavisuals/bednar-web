@@ -19,3 +19,6 @@ npm-debug.log*
 
 # os
 .DS_Store
+
+# jednorázové triage nástroje (mimo web)
+scripts/_triage-*.mjs
