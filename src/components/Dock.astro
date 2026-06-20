@@ -9,47 +9,47 @@ interface Props {
 }
 const { locale, sectionKey } = Astro.props;
 
-// Ikona + barva dlaždice pro každou sekci (squircle jako app ikona).
+// Ikona + tlumená barva dlaždice (sladěná, decentní paleta). Jemný dvoutón pro hloubku.
 const icons: Record<SectionKey, { color: string; from: string; path: string }> = {
   home: {
-    color: '#3f74d6',
-    from: '#5b8af0',
-    path: '<path d="M4 11 12 4l8 7"/><path d="M6 10v9h12v-9"/>',
+    color: '#4f6f9c',
+    from: '#6b89b4',
+    path: '<path d="M4.6 11.4 12 5.2l7.4 6.2"/><path d="M6.6 10.2V18.8h10.8V10.2"/>',
   },
   bio: {
-    color: '#2f9e9e',
-    from: '#46c2c2',
-    path: '<circle cx="12" cy="8" r="3.2"/><path d="M5.5 19a6.6 6.6 0 0 1 13 0"/>',
+    color: '#3f8079',
+    from: '#5b9b94',
+    path: '<circle cx="12" cy="8.4" r="3"/><path d="M6.2 18.6a5.8 5.8 0 0 1 11.6 0"/>',
   },
   reference: {
-    color: '#7b54c6',
-    from: '#9e78e6',
-    path: '<path d="M7 4h7l4 4v12H7z"/><path d="M9.5 11h5M9.5 14h5M9.5 17h3"/>',
+    color: '#65608c',
+    from: '#837ea8',
+    path: '<rect x="6.6" y="4.2" width="10.8" height="15.6" rx="2.2"/><path d="M9.4 9h5.2M9.4 12.5h5.2M9.4 16h3.6"/>',
   },
   glass: {
-    color: '#2f8fb0',
-    from: '#49b3d6',
-    path: '<path d="M12 3 21 12 12 21 3 12z"/>',
+    color: '#3f7c98',
+    from: '#5c97b2',
+    path: '<path d="M12 4.4 19.6 12 12 19.6 4.4 12Z"/>',
   },
   ooc: {
-    color: '#c0476f',
-    from: '#e06b92',
-    path: '<path d="M4 11 11 4h7v7l-7 7z"/><circle cx="14.5" cy="8.5" r="1.3"/>',
+    color: '#9c6471',
+    from: '#b9818d',
+    path: '<path d="M4.7 11.3 11.3 4.7H18a1 1 0 0 1 1 1v6.7l-6.6 6.6a1.2 1.2 0 0 1-1.7 0L4.7 13a1.2 1.2 0 0 1 0-1.7Z"/><circle cx="14.6" cy="9.4" r="1.2"/>',
   },
   studio: {
-    color: '#c39a3b',
-    from: '#e3bb5b',
-    path: '<path d="M12 3a9 9 0 1 0 0 18c1.4 0 2-.9 2-1.8 0-1-1-1.4-1-2.4 0-.9.8-1.6 1.8-1.6H17a3.5 3.5 0 0 0 3.5-3.5C20.5 6.4 16.7 3 12 3Z"/><circle cx="7.6" cy="11" r="1"/><circle cx="10" cy="7.6" r="1"/><circle cx="14.6" cy="7.6" r="1"/>',
+    color: '#a08a55',
+    from: '#bda572',
+    path: '<path d="M12 4.2a7.8 7.8 0 1 0 1 15.5c1.1 0 1.6-1 1.3-1.9-.3-1.1.5-2.1 1.7-2.1H18a3 3 0 0 0 3-3c0-4.3-4-8.5-9-8.5Z"/><circle cx="8" cy="11.6" r="1"/><circle cx="10.4" cy="8.2" r="1"/><circle cx="14.4" cy="8.2" r="1"/>',
   },
   news: {
-    color: '#3ba17a',
-    from: '#55c498',
-    path: '<path d="M4 10v4l9 4V6z"/><path d="M14.5 9a4 4 0 0 1 0 6"/>',
+    color: '#5a8a6e',
+    from: '#76a78a',
+    path: '<path d="M5 10.4v3.2l8.2 3.6V6.8z"/><path d="M14.4 9.6a3.4 3.4 0 0 1 0 4.8"/>',
   },
   contact: {
-    color: '#c64a4a',
-    from: '#e06a6a',
-    path: '<path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/>',
+    color: '#a06a5b',
+    from: '#bd8676',
+    path: '<rect x="4.6" y="6" width="14.8" height="12" rx="2.4"/><path d="m5.4 8 6.6 4.6L18.6 8"/>',
   },
 };
 
@@ -109,12 +109,8 @@ const items = sections; // home + 7 sekcí, v pořadí
       0 18px 50px -12px rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(16px) saturate(1.2);
     -webkit-backdrop-filter: blur(16px) saturate(1.2);
-    overflow-x: auto;
-    overflow-y: visible;
-    scrollbar-width: none;
-  }
-  .dock__list::-webkit-scrollbar {
-    display: none;
+    /* visible (ne auto) — jinak by overflow ořízl tooltip nad lištou */
+    overflow: visible;
   }
   .dock__cell {
     display: flex;
@@ -132,17 +128,19 @@ const items = sections; // home + 7 sekcí, v pořadí
   .dock__icon {
     display: grid;
     place-items: center;
-    width: clamp(40px, 6.2vw, 52px);
-    height: clamp(40px, 6.2vw, 52px);
-    border-radius: 27%;
-    background: linear-gradient(160deg, var(--c2), var(--c));
+    width: clamp(38px, 5.4vw, 46px);
+    height: clamp(38px, 5.4vw, 46px);
+    border-radius: 28%;
+    background: linear-gradient(180deg, var(--c2), var(--c));
+    border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow:
-      0 1px 0 rgba(255, 255, 255, 0.35) inset,
-      0 6px 14px -6px rgba(0, 0, 0, 0.6);
+      0 1px 0 rgba(255, 255, 255, 0.18) inset,
+      0 5px 12px -7px rgba(0, 0, 0, 0.55);
   }
   .dock__icon svg {
-    width: 58%;
-    height: 58%;
+    width: 56%;
+    height: 56%;
+    opacity: 0.95;
   }
 
   /* Aktivní tečka pod ikonou */
@@ -161,31 +159,57 @@ const items = sections; // home + 7 sekcí, v pořadí
     transform: translateX(-50%) scale(1);
   }
 
-  /* Tooltip nad ikonou */
+  /* Tooltip s názvem stránky nad ikonou (macOS styl) */
   .dock__tip {
     position: absolute;
     left: 50%;
-    bottom: calc(100% + 10px);
+    bottom: calc(100% + 14px);
     transform: translateX(-50%) translateY(4px);
-    padding: 0.3rem 0.6rem;
-    border-radius: 7px;
+    padding: 0.35rem 0.7rem;
+    border-radius: 8px;
     font-family: var(--font-sans);
-    font-size: 0.78rem;
-    letter-spacing: 0.02em;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
     white-space: nowrap;
     color: var(--color-paper);
-    background: color-mix(in oklab, var(--color-ink) 92%, transparent);
-    border: 1px solid var(--color-ink-line);
+    background: color-mix(in oklab, var(--color-ink-soft) 82%, transparent);
+    border: 1px solid color-mix(in oklab, var(--color-paper) 14%, transparent);
+    box-shadow: 0 8px 22px -10px rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     opacity: 0;
     pointer-events: none;
     transition:
-      opacity 0.18s var(--ease-out-soft),
-      transform 0.18s var(--ease-out-soft);
+      opacity 0.16s var(--ease-out-soft),
+      transform 0.16s var(--ease-out-soft);
+  }
+  /* Malá šipka dolů */
+  .dock__tip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-1px);
+    border: 5px solid transparent;
+    border-top-color: color-mix(in oklab, var(--color-ink-soft) 82%, transparent);
   }
   .dock__item:hover .dock__tip,
   .dock__item:focus-visible .dock__tip {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
+  }
+
+  /* Úzké telefony: zmenši, ať se 8 ikon vejde bez horizontálního scrollu. */
+  @media (max-width: 400px) {
+    .dock__list {
+      gap: 4px;
+      padding: 0.45rem 0.5rem;
+    }
+    .dock__icon {
+      width: 34px;
+      height: 34px;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -216,10 +240,10 @@ const items = sections; // home + 7 sekcí, v pořadí
     const fine = matchMedia('(pointer: fine)').matches;
     if (reduce || !fine) return;
 
-    const SIGMA = 65; // šířka vlivu (px)
-    const BOOST = 0.55; // max zvětšení (+55 %)
-    const SPREAD = 14; // rozestup sousedů (px)
-    const LIFT = 10; // nadzvednutí (px)
+    const SIGMA = 58; // šířka vlivu (px)
+    const BOOST = 0.16; // max zvětšení (jen malinko, +16 %)
+    const SPREAD = 5; // rozestup sousedů (px)
+    const LIFT = 4; // nadzvednutí (px)
 
     let centers: number[] = [];
     const measure = () => {
