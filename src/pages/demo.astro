@@ -1,0 +1,146 @@
+---
+// LAB — izolovaná ukázka reusable komponent (krok 3). Není v navigaci ani i18n.
+// V kroku 4 je poskládáme na reálné sekce.
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import SectionBg from '../components/SectionBg.astro';
+import Gallery from '../components/Gallery.astro';
+import Reveal from '../components/Reveal.astro';
+
+import heroBlue from '../assets/images/placeholders/hero-blue.jpg';
+import demoBg from '../assets/images/placeholders/demo-bg.jpg';
+import g01 from '../assets/images/placeholders/g-01.jpg';
+import g02 from '../assets/images/placeholders/g-02.jpg';
+import g03 from '../assets/images/placeholders/g-03.jpg';
+import g04 from '../assets/images/placeholders/g-04.jpg';
+import g05 from '../assets/images/placeholders/g-05.jpg';
+import g06 from '../assets/images/placeholders/g-06.jpg';
+
+const galleryItems = [
+  { src: g01, alt: 'Placeholder Sklo 01', caption: 'Abstract on Glass · 01' },
+  { src: g02, alt: 'Placeholder Sklo 02', caption: 'Abstract on Glass · 02' },
+  { src: g03, alt: 'Placeholder Sklo 03', caption: 'Abstract on Glass · 03' },
+  { src: g04, alt: 'Placeholder Sklo 04', caption: 'Abstract on Glass · 04' },
+  { src: g05, alt: 'Placeholder Sklo 05', caption: 'Abstract on Glass · 05' },
+  { src: g06, alt: 'Placeholder Sklo 06', caption: 'Abstract on Glass · 06' },
+];
+---
+
+<Base title="LAB — komponenty">
+  <!-- 1) HERO -->
+  <span class="lab-tag">1 · Hero (video + poster + scroll cue)</span>
+  <Hero
+    poster={heroBlue}
+    posterAlt="Placeholder modrý hero obraz"
+    video="/video/hero-aftermovie.mp4"
+    eyebrow="malba na kalené sklo"
+    title={'VÁCLAV BEDNÁŘ <span class="accent">ART</span>'}
+    subtitle="Abstraktní světy tvarů a barev."
+  />
+
+  <!-- 2) SECTIONBG -->
+  <span class="lab-tag" id="dal">2 · SectionBg (parallax + scrim)</span>
+  <SectionBg image={demoBg} alt="Placeholder pozadí" parallax={0.25} align="center">
+    <Reveal group class="lab-prose">
+      <Reveal as="h2" class="u-display">SectionBg</Reveal>
+      <Reveal as="p" class="prose-serif">
+        Celoplošné pozadí jede při scrollu pomaleji než obsah — vzniká hloubka.
+        Přes obrázek je tmavý gradientový scrim pro čitelnost. Scrolluj nahoru/dolů
+        a sleduj, jak se pozadí posouvá jinou rychlostí než tento text.
+      </Reveal>
+      <Reveal as="p" class="prose-serif">
+        Vše jen přes transform/opacity. Při <code>prefers-reduced-motion</code> je
+        pozadí statické.
+      </Reveal>
+    </Reveal>
+  </SectionBg>
+
+  <!-- 3) REVEAL -->
+  <span class="lab-tag">3 · Reveal (fade + posun, stagger)</span>
+  <section class="lab-section">
+    <Reveal group class="lab-cards">
+      {
+        Array.from({ length: 4 }).map((_, i) => (
+          <Reveal as="article" class="lab-card">
+            <span class="lab-card__num">0{i + 1}</span>
+            <p>Staggered reveal — položky nastupují postupně, jak sekce vjede do viewportu.</p>
+          </Reveal>
+        ))
+      }
+    </Reveal>
+  </section>
+
+  <!-- 4) GALLERY + LIGHTBOX -->
+  <span class="lab-tag">4 · Gallery + PhotoSwipe (klik = zoom)</span>
+  <section class="lab-section">
+    <Gallery items={galleryItems} columns={3} />
+  </section>
+
+  <footer class="lab-footer">
+    <p>Konec laboratoře · komponenty připravené k nasazení v kroku 4</p>
+  </footer>
+</Base>
+
+<style>
+  .lab-tag {
+    display: block;
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    padding: 0.5rem 1rem;
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-accent-soft);
+    background: color-mix(in oklab, var(--color-ink) 92%, transparent);
+    border-bottom: 1px solid var(--color-ink-line);
+    backdrop-filter: blur(6px);
+  }
+  .lab-section {
+    max-width: 1200px;
+    margin-inline: auto;
+    padding: clamp(4rem, 10vh, 7rem) clamp(1.25rem, 5vw, 4rem);
+  }
+  .lab-prose {
+    max-width: 60ch;
+  }
+  .lab-prose :global(h2) {
+    margin: 0 0 1.5rem;
+  }
+  .lab-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+  }
+  .lab-card {
+    border: 1px solid var(--color-ink-line);
+    border-radius: 6px;
+    padding: 1.75rem;
+    background: var(--color-ink-soft);
+  }
+  .lab-card__num {
+    font-family: var(--font-serif);
+    font-size: 2rem;
+    color: var(--color-accent);
+    display: block;
+    margin-bottom: 0.75rem;
+  }
+  .lab-card p {
+    margin: 0;
+    color: var(--color-muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+  .lab-footer {
+    text-align: center;
+    padding: 4rem 1.5rem 6rem;
+    color: var(--color-muted);
+    font-size: 0.85rem;
+  }
+  code {
+    font-family: monospace;
+    font-size: 0.85em;
+    color: var(--color-accent-soft);
+  }
+</style>

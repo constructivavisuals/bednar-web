@@ -1,0 +1,91 @@
+---
+// Celoplošná sekce s obrázkovým pozadím, parallaxem a tmavým scrimem.
+// Pozadí jede pomaleji než obsah → hloubka. Parallax řeší motion.ts (jen transform).
+// Reduced-motion: parallax se nespustí, pozadí je statické.
+import BlurImage from './BlurImage.astro';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  image: ImageMetadata;
+  alt: string;
+  /** síla parallaxu 0–1 (0 = bez pohybu). Default 0.2 */
+  parallax?: number;
+  /** svislé zarovnání obsahu */
+  align?: 'top' | 'center' | 'bottom';
+  /** vodorovné zarovnání obsahu */
+  justify?: 'start' | 'center' | 'end';
+  /** síla ztmavení pro čitelnost 0–1. Default 0.55 */
+  scrim?: number;
+  class?: string;
+  minHeight?: string;
+}
+
+const {
+  image,
+  alt,
+  parallax = 0.2,
+  align = 'center',
+  justify = 'start',
+  scrim = 0.55,
+  class: className,
+  minHeight = '100svh',
+} = Astro.props;
+
+const alignItems = align === 'top' ? 'flex-start' : align === 'bottom' ? 'flex-end' : 'center';
+const justifyContent = justify === 'center' ? 'center' : justify === 'end' ? 'flex-end' : 'flex-start';
+---
+
+<section
+  class:list={['sectionbg', className]}
+  data-parallax-scope
+  style={`--min-h:${minHeight}; --scrim:${scrim}; --align:${alignItems}; --justify:${justifyContent};`}
+>
+  <div class="sectionbg__media" data-parallax={parallax}>
+    <BlurImage src={image} alt={alt} sizes="100vw" class="sectionbg__img" />
+  </div>
+  <div class="sectionbg__scrim" aria-hidden="true"></div>
+  <div class="sectionbg__content">
+    <slot />
+  </div>
+</section>
+
+<style>
+  .sectionbg {
+    position: relative;
+    min-height: var(--min-h);
+    overflow: hidden;
+    display: flex;
+    align-items: var(--align);
+    justify-content: var(--justify);
+  }
+  .sectionbg__media {
+    position: absolute;
+    inset: -12% 0; /* přesah pro parallax pohyb bez odhalení okrajů */
+    z-index: 0;
+    will-change: transform;
+  }
+  .sectionbg__media :global(.sectionbg__img) {
+    width: 100%;
+    height: 100%;
+  }
+  .sectionbg__scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+      linear-gradient(
+        to bottom,
+        color-mix(in oklab, var(--color-ink) calc(var(--scrim) * 80%), transparent),
+        color-mix(in oklab, var(--color-ink) calc(var(--scrim) * 55%), transparent) 45%,
+        color-mix(in oklab, var(--color-ink) calc(var(--scrim) * 100%), transparent)
+      );
+  }
+  .sectionbg__content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 1200px;
+    margin-inline: auto;
+    padding: clamp(6rem, 12vh, 9rem) clamp(1.25rem, 5vw, 4rem);
+  }
+</style>

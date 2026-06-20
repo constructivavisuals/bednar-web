@@ -1,0 +1,25 @@
+---
+// Scroll-reveal wrapper. Obsah se při scrollu nasune (fade + lehký posun nahoru).
+// `group` = kontejner, jehož vnořené <Reveal> prvky nastoupí staggerovaně.
+// Bez JS / při reduced-motion je obsah rovnou viditelný (progresivní vylepšení).
+interface Props {
+  as?: keyof HTMLElementTagNameMap;
+  group?: boolean;
+  class?: string;
+}
+
+const { as = 'div', group = false, class: className } = Astro.props;
+const Tag = as as any;
+---
+
+{
+  group ? (
+    <Tag data-reveal-group class:list={[className]}>
+      <slot />
+    </Tag>
+  ) : (
+    <Tag data-reveal class:list={[className]}>
+      <slot />
+    </Tag>
+  )
+}

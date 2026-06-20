@@ -1,0 +1,104 @@
+---
+// Responsivní obrázek přes astro:assets s blur-up LQIP placeholderem a lazy-load.
+// LQIP = drobná rozmazaná verze pod ostrým obrázkem; ten se po načtení plynule objeví.
+import { Image, getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  sizes?: string;
+  widths?: number[];
+  loading?: 'lazy' | 'eager';
+  class?: string;
+  /** poměr stran krytí; cover je default */
+  fit?: 'cover' | 'contain';
+}
+
+const {
+  src,
+  alt,
+  sizes = '100vw',
+  widths,
+  loading = 'lazy',
+  class: className,
+  fit = 'cover',
+} = Astro.props;
+
+// Drobné LQIP (24px) — inline jako rozmazaná spodní vrstva.
+const lqip = await getImage({ src, width: 24, quality: 30 });
+
+// Rozumné šířky srcsetu, ořezané na skutečnou šířku zdroje.
+const defaultWidths = [400, 800, 1200, 1600, 2000].filter((w) => w <= src.width);
+if (!defaultWidths.includes(src.width)) defaultWidths.push(src.width);
+---
+
+<div class:list={['blurimg', className]} data-fit={fit}>
+  <div class="blurimg__lqip" style={`background-image:url(${lqip.src})`} aria-hidden="true"></div>
+  <Image
+    src={src}
+    alt={alt}
+    sizes={sizes}
+    widths={widths ?? defaultWidths}
+    loading={loading}
+    decoding="async"
+    class="blurimg__img"
+    data-blurimg
+  />
+</div>
+
+<style>
+  .blurimg {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    background: var(--color-ink-soft);
+  }
+  .blurimg__lqip {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    filter: blur(16px);
+    transform: scale(1.12);
+    transition: opacity 0.6s var(--ease-out-soft);
+  }
+  .blurimg__img {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.7s var(--ease-out-soft);
+  }
+  .blurimg[data-fit='cover'] .blurimg__img {
+    object-fit: cover;
+  }
+  .blurimg[data-fit='contain'] .blurimg__img {
+    object-fit: contain;
+  }
+  .blurimg__img[data-loaded] {
+    opacity: 1;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .blurimg__img,
+    .blurimg__lqip {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  // Fade-in po načtení (i z cache). Re-běh po View Transitions.
+  function revealImages() {
+    document.querySelectorAll<HTMLImageElement>('img[data-blurimg]').forEach((img) => {
+      if (img.dataset.loaded) return;
+      const done = () => img.setAttribute('data-loaded', '');
+      if (img.complete && img.naturalWidth > 0) done();
+      else img.addEventListener('load', done, { once: true });
+    });
+  }
+  revealImages();
+  document.addEventListener('astro:page-load', revealImages);
+</script>
