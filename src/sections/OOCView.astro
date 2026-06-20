@@ -1,0 +1,42 @@
+---
+import Gallery from '../components/Gallery.astro';
+import Reveal from '../components/Reveal.astro';
+import { getContent } from '../content';
+import { navLabel, type Locale } from '../i18n/config';
+import { imgSeries } from '../assets/images';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const c = getContent(locale);
+
+const items = imgSeries('ooc').map((src, i) => ({
+  src,
+  alt: `Out of Control — ${i + 1}`,
+}));
+---
+
+<section class="ooc section-pad">
+  <div class="reading reading--wide">
+    <Reveal as="p" class="eyebrow">{navLabel('ooc', locale)}</Reveal>
+    <Reveal as="h1" class="section-title ooc__title">Out of Control</Reveal>
+    {c.ooc.paragraphs.map((p) => <Reveal as="p" class="prose-serif">{p}</Reveal>)}
+  </div>
+
+  <div class="ooc__gallery">
+    <Reveal>
+      <Gallery items={items} columns={3} />
+    </Reveal>
+  </div>
+</section>
+
+<style>
+  .ooc__title {
+    margin-bottom: 2.5rem;
+  }
+  .ooc__gallery {
+    max-width: 1300px;
+    margin: clamp(3rem, 8vh, 6rem) auto 0;
+  }
+</style>

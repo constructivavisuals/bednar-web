@@ -1,6 +1,7 @@
 ---
 import SectionBg from '../components/SectionBg.astro';
 import Reveal from '../components/Reveal.astro';
+import BlurImage from '../components/BlurImage.astro';
 import { getContent } from '../content';
 import type { Locale } from '../i18n/config';
 import { img } from '../assets/images';
@@ -15,12 +16,42 @@ const bgAlt =
   locale === 'cs'
     ? 'Rozmazané atmosférické pozadí ateliéru'
     : 'Blurred atmospheric studio background';
+const portraitAlt =
+  locale === 'cs' ? 'Portrét Václava Bednáře' : 'Portrait of Václav Bednář';
+
+// Portrét vložíme za první odstavec textu.
+const [first, ...rest] = c.bio.paragraphs;
 ---
 
 <SectionBg image={img('bio-bg')} alt={bgAlt} blur={9} parallax={0.12} align="center" scrim={0.62}>
   <article class="reading section-pad">
     <Reveal as="p" class="lead">{c.bio.lead}</Reveal>
-    {c.bio.paragraphs.map((p) => <Reveal as="p" class="prose-serif">{p}</Reveal>)}
+    <Reveal as="p" class="prose-serif">{first}</Reveal>
+
+    <Reveal as="figure" class="bio-portrait">
+      <BlurImage src={img('bio-portrait')} alt={portraitAlt} sizes="(max-width: 700px) 90vw, 420px" />
+    </Reveal>
+
+    {rest.map((p) => <Reveal as="p" class="prose-serif">{p}</Reveal>)}
     <Reveal as="p" class="signature">{c.bio.signature}</Reveal>
   </article>
 </SectionBg>
+
+<style>
+  .bio-portrait {
+    margin: 2.5rem 0;
+    max-width: 420px;
+  }
+  .bio-portrait :global(.blurimg) {
+    border-radius: 4px;
+    box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.7);
+  }
+  /* Na širších displejích portrét decentně vpravo, text ho obtéká. */
+  @media (min-width: 720px) {
+    .bio-portrait {
+      float: right;
+      width: 42%;
+      margin: 0.4rem 0 1.5rem 2.5rem;
+    }
+  }
+</style>

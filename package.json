@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@fontsource-variable/space-grotesk": "^5.1.0",
+    "@fontsource/archivo-black": "^5.2.8",
     "@fontsource/cormorant-garamond": "^5.1.0",
     "astro": "^5.18.2",
     "gsap": "^3.15.0",

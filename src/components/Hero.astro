@@ -18,7 +18,7 @@ interface Props {
 const { poster, posterAlt, video, eyebrow, title, subtitle } = Astro.props;
 ---
 
-<section class="hero">
+<section class:list={['hero', { 'hero--drift': !video }]}>
   <div class="hero__media">
     <BlurImage src={poster} alt={posterAlt} loading="eager" sizes="100vw" class="hero__poster" />
     {
@@ -72,6 +72,19 @@ const { poster, posterAlt, video, eyebrow, title, subtitle } = Astro.props;
     inset: 0;
     width: 100%;
     height: 100%;
+  }
+  /* Pomalý ken-burns drift na poster, když hero nemá video (jen transform). */
+  .hero--drift :global(.hero__poster) {
+    animation: hero-drift 26s ease-in-out infinite alternate;
+    will-change: transform;
+  }
+  @keyframes hero-drift {
+    from {
+      transform: scale(1.04) translate3d(0, 0, 0);
+    }
+    to {
+      transform: scale(1.12) translate3d(-1.6%, -1.2%, 0);
+    }
   }
   .hero__video {
     position: absolute;
@@ -153,6 +166,7 @@ const { poster, posterAlt, video, eyebrow, title, subtitle } = Astro.props;
   @media (prefers-reduced-motion: reduce) {
     .hero__video { transition: none; }
     .hero__cue-line { animation: none; }
+    .hero--drift :global(.hero__poster) { animation: none; }
   }
 </style>
 

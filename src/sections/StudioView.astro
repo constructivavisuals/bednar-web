@@ -1,0 +1,35 @@
+---
+import SectionBg from '../components/SectionBg.astro';
+import Gallery from '../components/Gallery.astro';
+import Reveal from '../components/Reveal.astro';
+import { navLabel, type Locale } from '../i18n/config';
+import { img, imgSeries } from '../assets/images';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+
+const bgAlt = locale === 'cs' ? 'Ateliér Václava Bednáře' : 'Studio of Václav Bednář';
+const items = imgSeries('studio').map((src, i) => ({
+  src,
+  alt: locale === 'cs' ? `Ateliér — ${i + 1}` : `Studio — ${i + 1}`,
+}));
+---
+
+<SectionBg image={img('studio-bg')} alt={bgAlt} parallax={0.22} align="bottom" minHeight="66svh" scrim={0.5}>
+  <Reveal as="h1" class="section-title">{navLabel('studio', locale)}</Reveal>
+</SectionBg>
+
+<section class="studio section-pad">
+  <Reveal>
+    <Gallery items={items} columns={3} />
+  </Reveal>
+</section>
+
+<style>
+  .studio {
+    max-width: 1300px;
+    margin-inline: auto;
+  }
+</style>

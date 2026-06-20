@@ -1,0 +1,67 @@
+---
+import SectionBg from '../components/SectionBg.astro';
+import Reveal from '../components/Reveal.astro';
+import { getContent } from '../content';
+import { navLabel, type Locale } from '../i18n/config';
+import { img } from '../assets/images';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const c = getContent(locale);
+
+const bgAlt = locale === 'cs' ? 'Výstavní prostor' : 'Exhibition space';
+---
+
+<SectionBg image={img('news-myslbek')} alt={bgAlt} parallax={0.18} align="center" scrim={0.66}>
+  <div class="reading section-pad">
+    <Reveal as="p" class="eyebrow">{navLabel('news', locale)}</Reveal>
+
+    {
+      c.news.exhibitions.map((ex) => (
+        <article class="exhibition">
+          <Reveal as="h2" class="exhibition__title">{ex.title}</Reveal>
+          <Reveal as="p" class="exhibition__meta">
+            <span class="exhibition__dates">{ex.dates}</span>
+            <span class="exhibition__venue">{ex.venue}</span>
+          </Reveal>
+          {ex.body.map((p) => <Reveal as="p" class="prose-serif">{p}</Reveal>)}
+          <Reveal as="p" class="signature">{ex.signature}</Reveal>
+        </article>
+      ))
+    }
+  </div>
+</SectionBg>
+
+<style>
+  .exhibition + .exhibition {
+    margin-top: 4rem;
+    padding-top: 3rem;
+    border-top: 1px solid var(--color-ink-line);
+  }
+  .exhibition__title {
+    font-family: var(--font-sans);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 600;
+    line-height: 1.02;
+    letter-spacing: -0.015em;
+    margin: 0 0 1rem;
+  }
+  .exhibition__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    margin: 0 0 2rem;
+    color: var(--color-accent-soft);
+  }
+  .exhibition__dates {
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  .exhibition__venue {
+    font-size: 0.95rem;
+    color: var(--color-muted);
+  }
+</style>
