@@ -58,9 +58,10 @@ const mailHref = 'mailto:' + c.contact.email;
   }
   .contact__card {
     max-width: 420px;
-  }
-  .contact__title {
-    margin-bottom: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    /* stejný rozestup titulek→první položka jako mezi položkami */
+    gap: 1.5rem;
   }
   .contact__list {
     list-style: none;
