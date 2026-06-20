@@ -19,7 +19,15 @@ function init() {
       gallery: el,
       children: 'a',
       showHideAnimationType: reduce() ? 'none' : 'zoom',
-      bgOpacity: 0.96,
+      // Pozadí řešíme CSS (rozmazaná stránka, ne černá) → necháme vrstvu plně viditelnou.
+      bgOpacity: 1,
+      // Jeden obrázek, ne galerie — žádné přepínání na další.
+      allowPanToNext: false,
+      // Odsazení, ať je kolem zvětšeného obrázku vidět rozmazané pozadí.
+      paddingFn: (viewportSize) => {
+        const p = Math.round(Math.min(viewportSize.x, viewportSize.y) * 0.06);
+        return { top: p, bottom: p, left: p, right: p };
+      },
       pswpModule: () => import('photoswipe'),
     });
     lb.init();

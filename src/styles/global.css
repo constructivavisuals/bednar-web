@@ -216,3 +216,22 @@ p.prose-serif {
   color: var(--color-paper);
   font-weight: 600;
 }
+
+/* ──────────────────────────────────────────────
+   Lightbox (PhotoSwipe) — zvětšený obrázek na ROZMAZANÉM pozadí (ne černém),
+   bez galerijního chrome (šipky, počítadlo).
+   ────────────────────────────────────────────── */
+.pswp {
+  --pswp-bg: color-mix(in oklab, var(--color-ink) 42%, transparent);
+}
+.pswp__bg {
+  background: color-mix(in oklab, var(--color-ink) 42%, transparent) !important;
+  backdrop-filter: blur(24px) saturate(1.05);
+  -webkit-backdrop-filter: blur(24px) saturate(1.05);
+}
+/* skryj galerijní navigaci — chceme jen zvětšený obrázek */
+.pswp__button--arrow--prev,
+.pswp__button--arrow--next,
+.pswp__counter {
+  display: none !important;
+}
