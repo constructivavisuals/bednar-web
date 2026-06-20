@@ -18,25 +18,47 @@ const items = imgSeries('ooc').map((src, i) => ({
 ---
 
 <section class="ooc section-pad">
-  <div class="reading reading--wide">
-    <Reveal as="p" class="eyebrow">{navLabel('ooc', locale)}</Reveal>
-    <Reveal as="h1" class="section-title ooc__title">Out of Control</Reveal>
-    {c.ooc.paragraphs.map((p) => <Reveal as="p" class="prose-serif">{p}</Reveal>)}
-  </div>
+  <div class="ooc__grid">
+    <div class="ooc__text">
+      <Reveal as="p" class="eyebrow">{navLabel('ooc', locale)}</Reveal>
+      <Reveal as="h1" class="section-title">Out of Control</Reveal>
+      <div class="ooc__prose">
+        {c.ooc.paragraphs.map((p) => <Reveal as="p" class="prose-serif">{p}</Reveal>)}
+      </div>
+    </div>
 
-  <div class="ooc__gallery">
-    <Reveal>
-      <Gallery items={items} columns={3} />
-    </Reveal>
+    <div class="ooc__gallery">
+      <Reveal>
+        <Gallery items={items} columns={2} />
+      </Reveal>
+    </div>
   </div>
 </section>
 
 <style>
-  .ooc__title {
-    margin-bottom: 2.5rem;
-  }
-  .ooc__gallery {
+  .ooc__grid {
+    display: grid;
+    gap: clamp(2rem, 5vw, 4rem);
     max-width: 1300px;
-    margin: clamp(3rem, 8vh, 6rem) auto 0;
+    margin-inline: auto;
+  }
+  @media (min-width: 960px) {
+    .ooc__grid {
+      grid-template-columns: minmax(260px, 0.8fr) 1.4fr;
+      align-items: start;
+    }
+    /* Text drží nahoře při scrollu galerie */
+    .ooc__text {
+      position: sticky;
+      top: 6rem;
+    }
+  }
+  .ooc__prose {
+    margin-top: 1.75rem;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ooc__text {
+      position: static;
+    }
   }
 </style>
