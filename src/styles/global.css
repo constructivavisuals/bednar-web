@@ -14,13 +14,19 @@
   --color-accent: #3f74d6;     /* modrá vytažená z hero obrazu */
   --color-accent-soft: #6f97e6;
 
-  /* Typografie — max 3 řezy.
-     --font-display = wordmark z letáku (lokální woff2 dodá Václav, zatím fallback).
-     --font-sans    = moderní grotesk pro nadpisy a UI.
-     --font-serif   = pro dlouhé texty (bio, esej, rozhovor) — katalogový pocit. */
+  /* Typografie.
+     --font-display = wordmark (Archivo Black, prozatímní).
+     --font-heading = nadpisy (grotesk Space Grotesk).
+     --font-sans / --font-serif = VŠE OSTATNÍ → Univers.
+       Univers je komerční font (není zdarma). Stack zkouší reálný Univers
+       (pokud je nainstalovaný / přes Adobe Fonts), jinak padá na nejbližší
+       univerzální neogrotesk (Helvetica Neue / Arial). Pro reálný Univers u všech
+       návštěvníků sem stačí doplnit Adobe Fonts kit nebo self-hostovaný woff2. */
   --font-display: "VB Wordmark", "Archivo Black", "Arial Black", system-ui, sans-serif;
-  --font-sans: "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-serif: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+  --font-heading: "Space Grotesk Variable", "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-univers: "Univers", "Univers LT Std", "Univers Next", "UniversLTStd", "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+  --font-sans: var(--font-univers);
+  --font-serif: var(--font-univers);
 
   /* Plynulé editorial měřítko (clamp na viewport) */
   --text-hero: clamp(2.75rem, 8vw, 7rem);
@@ -123,7 +129,7 @@ video {
 }
 
 .u-display {
-  font-family: var(--font-sans);
+  font-family: var(--font-heading);
   font-size: var(--text-display);
   line-height: 1.05;
   letter-spacing: -0.015em;
@@ -169,7 +175,7 @@ p.prose-serif {
 }
 
 .section-title {
-  font-family: var(--font-sans);
+  font-family: var(--font-heading);
   font-size: var(--text-display);
   font-weight: 600;
   line-height: 1.02;
