@@ -1,0 +1,26 @@
+---
+import SectionBg from '../components/SectionBg.astro';
+import Reveal from '../components/Reveal.astro';
+import { getContent } from '../content';
+import type { Locale } from '../i18n/config';
+import { img } from '../assets/images';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const c = getContent(locale);
+
+const bgAlt =
+  locale === 'cs'
+    ? 'Rozmazané atmosférické pozadí ateliéru'
+    : 'Blurred atmospheric studio background';
+---
+
+<SectionBg image={img('bio-bg')} alt={bgAlt} blur={9} parallax={0.12} align="center" scrim={0.62}>
+  <article class="reading section-pad">
+    <Reveal as="p" class="lead">{c.bio.lead}</Reveal>
+    {c.bio.paragraphs.map((p) => <Reveal as="p" class="prose-serif">{p}</Reveal>)}
+    <Reveal as="p" class="signature">{c.bio.signature}</Reveal>
+  </article>
+</SectionBg>

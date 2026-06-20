@@ -1,0 +1,138 @@
+---
+import SectionBg from '../components/SectionBg.astro';
+import Reveal from '../components/Reveal.astro';
+import { getContent } from '../content';
+import { navLabel, type Locale } from '../i18n/config';
+import { img } from '../assets/images';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const c = getContent(locale);
+const essay = c.reference.essay;
+const itw = c.reference.interview;
+
+const bgAlt =
+  locale === 'cs' ? 'Detail abstraktní malby na skle' : 'Detail of an abstract painting on glass';
+---
+
+<!-- Úvodní band -->
+<SectionBg image={img('reference-bg')} alt={bgAlt} parallax={0.22} align="bottom" minHeight="58svh" scrim={0.55}>
+  <Reveal as="h1" class="section-title">{navLabel('reference', locale)}</Reveal>
+</SectionBg>
+
+<article class="reading reading--wide section-pad ref">
+  <!-- Esej -->
+  <section class="ref__block">
+    <Reveal as="p" class="eyebrow">{locale === 'cs' ? 'Esej' : 'Essay'}</Reveal>
+    <Reveal as="h2" class="ref__title">{essay.title}</Reveal>
+    {essay.paragraphs.map((p) => <Reveal as="p" class="prose-serif">{p}</Reveal>)}
+    <Reveal class="byline">
+      <strong>{essay.author}</strong>
+      <span>{essay.authorRole}</span>
+    </Reveal>
+  </section>
+
+  <!-- Rozhovor -->
+  <section class="ref__block ref__interview">
+    <Reveal as="p" class="eyebrow">{itw.source}</Reveal>
+    <Reveal as="h2" class="ref__title">{itw.headline}</Reveal>
+    <Reveal as="p" class="prose-serif ref__intro">{itw.intro}</Reveal>
+
+    {
+      itw.qa.map((block) => (
+        <div class="qa">
+          <Reveal as="p" class="qa__q">{block.q}</Reveal>
+          {block.a.map((p) => <Reveal as="p" class="prose-serif">{p}</Reveal>)}
+        </div>
+      ))
+    }
+
+    <Reveal class="byline">{itw.by}</Reveal>
+
+    <Reveal class="further">
+      <p class="eyebrow">{c.ui.furtherInterviews}</p>
+      <ul class="further__list">
+        {
+          itw.links.map((l) => (
+            <li>
+              <a href={l.href} target="_blank" rel="noopener noreferrer">
+                {l.label}
+                <span aria-hidden="true">↗</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </Reveal>
+  </section>
+</article>
+
+<style>
+  .ref__title {
+    font-family: var(--font-sans);
+    font-size: clamp(1.6rem, 3.2vw, 2.6rem);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    margin: 0 0 2rem;
+    max-width: 22ch;
+  }
+  .ref__interview {
+    margin-top: clamp(4rem, 9vh, 7rem);
+    padding-top: clamp(3rem, 6vh, 5rem);
+    border-top: 1px solid var(--color-ink-line);
+  }
+  .ref__intro {
+    color: var(--color-muted);
+  }
+  .qa {
+    margin: 2.5rem 0;
+  }
+  /* Otázka tazatele — vizuálně odlišená (akcent + kurzíva + linka) */
+  .qa__q {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: clamp(1.15rem, 1.8vw, 1.4rem);
+    line-height: 1.45;
+    color: var(--color-accent-soft);
+    border-left: 2px solid var(--color-accent);
+    padding-left: 1.1rem;
+    margin: 0 0 1.5rem;
+    max-width: 60ch;
+  }
+  .further {
+    margin-top: 3rem;
+  }
+  .further__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+  .further__list a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    color: var(--color-paper);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.25s var(--ease-out-soft);
+  }
+  .further__list a span {
+    color: var(--color-accent);
+    font-size: 0.85em;
+  }
+  .further__list a:hover {
+    border-color: var(--color-accent);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .further__list a {
+      transition: none;
+    }
+  }
+</style>

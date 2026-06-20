@@ -10,6 +10,8 @@ interface Props {
   alt: string;
   /** síla parallaxu 0–1 (0 = bez pohybu). Default 0.2 */
   parallax?: number;
+  /** rozmazání pozadí v px (0 = ostré). Pro „rozmazané" sekce typu BIO. */
+  blur?: number;
   /** svislé zarovnání obsahu */
   align?: 'top' | 'center' | 'bottom';
   /** vodorovné zarovnání obsahu */
@@ -24,6 +26,7 @@ const {
   image,
   alt,
   parallax = 0.2,
+  blur = 0,
   align = 'center',
   justify = 'start',
   scrim = 0.55,
@@ -38,9 +41,9 @@ const justifyContent = justify === 'center' ? 'center' : justify === 'end' ? 'fl
 <section
   class:list={['sectionbg', className]}
   data-parallax-scope
-  style={`--min-h:${minHeight}; --scrim:${scrim}; --align:${alignItems}; --justify:${justifyContent};`}
+  style={`--min-h:${minHeight}; --scrim:${scrim}; --align:${alignItems}; --justify:${justifyContent}; --blur:${blur}px;`}
 >
-  <div class="sectionbg__media" data-parallax={parallax}>
+  <div class:list={['sectionbg__media', { 'is-blurred': blur > 0 }]} data-parallax={parallax}>
     <BlurImage src={image} alt={alt} sizes="100vw" class="sectionbg__img" />
   </div>
   <div class="sectionbg__scrim" aria-hidden="true"></div>
@@ -63,6 +66,12 @@ const justifyContent = justify === 'center' ? 'center' : justify === 'end' ? 'fl
     inset: -12% 0; /* přesah pro parallax pohyb bez odhalení okrajů */
     z-index: 0;
     will-change: transform;
+  }
+  /* Rozmazané pozadí: blur + lehké zvětšení na obrazové vrstvě
+     (parallax mění transform na .sectionbg__media, proto blur/scale dáváme dovnitř). */
+  .sectionbg__media.is-blurred :global(.sectionbg__img) {
+    filter: blur(var(--blur));
+    transform: scale(1.1);
   }
   .sectionbg__media :global(.sectionbg__img) {
     width: 100%;

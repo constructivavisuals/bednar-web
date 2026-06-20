@@ -126,7 +126,76 @@ video {
   line-height: 1.7;
   color: color-mix(in oklab, var(--color-paper) 92%, transparent);
 }
-.prose-serif p {
+.prose-serif p,
+p.prose-serif {
   margin: 0 0 1.25em;
   max-width: 62ch;
+}
+
+/* ──────────────────────────────────────────────
+   Obsahové utility — čtený sloupec sdílený napříč sekcemi
+   ────────────────────────────────────────────── */
+.reading {
+  width: 100%;
+  max-width: 64ch;
+  margin-inline: auto;
+}
+.reading--wide {
+  max-width: 72ch;
+}
+
+.section-pad {
+  padding: clamp(4rem, 10vh, 7rem) clamp(1.25rem, 5vw, 3rem);
+}
+
+.eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--color-accent-soft);
+  margin: 0 0 1rem;
+}
+
+.section-title {
+  font-family: var(--font-sans);
+  font-size: var(--text-display);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+
+/* Úvodní věta odstavce (lead) — o stupeň větší, světlejší */
+.lead {
+  font-family: var(--font-serif);
+  font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+  line-height: 1.45;
+  color: var(--color-paper);
+  margin: 0 0 1.75rem;
+  max-width: 60ch;
+}
+
+/* Podpis pod textem (autor / umělec) */
+.signature {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.15rem;
+  color: var(--color-paper);
+  margin-top: 2rem;
+}
+
+/* Blok autora pod esejí/rozhovorem */
+.byline {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-ink-line);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--color-muted);
+}
+.byline strong {
+  display: block;
+  color: var(--color-paper);
+  font-weight: 600;
 }
