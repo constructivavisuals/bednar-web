@@ -1,0 +1,132 @@
+@import "tailwindcss";
+
+/* ──────────────────────────────────────────────
+   Design tokens — Václav Bednář ART
+   Tmavá galerijní „výztuž", ať barvy obrazů svítí.
+   ────────────────────────────────────────────── */
+@theme {
+  /* Barvy */
+  --color-ink: #0a0a0b;        /* základní pozadí, téměř černá */
+  --color-ink-soft: #141417;   /* karty / sekce o stupeň světlejší */
+  --color-ink-line: #26262b;   /* jemné linky, ohraničení */
+  --color-paper: #f4f3ef;      /* hlavní text na tmavém */
+  --color-muted: #9b9ba2;      /* sekundární text */
+  --color-accent: #3f74d6;     /* modrá vytažená z hero obrazu */
+  --color-accent-soft: #6f97e6;
+
+  /* Typografie — max 3 řezy.
+     --font-display = wordmark z letáku (lokální woff2 dodá Václav, zatím fallback).
+     --font-sans    = moderní grotesk pro nadpisy a UI.
+     --font-serif   = pro dlouhé texty (bio, esej, rozhovor) — katalogový pocit. */
+  --font-display: "VB Wordmark", "Space Grotesk", system-ui, sans-serif;
+  --font-sans: "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+
+  /* Plynulé editorial měřítko (clamp na viewport) */
+  --text-hero: clamp(2.75rem, 8vw, 7rem);
+  --text-display: clamp(2rem, 5vw, 4rem);
+
+  /* Motion */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ── Wordmark placeholder font ──
+   Až Václav dodá soubor, jen ho hoď do public/fonts/ a aktivuj @font-face níže.
+   Do té doby používáme grotesk fallback (Space Grotesk → system-ui). */
+/*
+@font-face {
+  font-family: "VB Wordmark";
+  src: url("/fonts/vb-wordmark.woff2") format("woff2");
+  font-display: swap;
+  font-weight: 400 700;
+}
+*/
+
+/* ──────────────────────────────────────────────
+   Base
+   ────────────────────────────────────────────── */
+html {
+  background-color: var(--color-ink);
+  color-scheme: dark;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100svh;
+  background-color: var(--color-ink);
+  color: var(--color-paper);
+  font-family: var(--font-sans);
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+/* Viditelný, vkusný focus pro klávesnici */
+:focus-visible {
+  outline: 2px solid var(--color-accent-soft);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img,
+video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* ──────────────────────────────────────────────
+   Reduced motion — vypni heavy motion globálně.
+   GSAP/Lenis budou navíc kontrolovat tuto preferenci v JS.
+   ────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Utility: editorial nadpisy */
+.u-hero {
+  font-family: var(--font-display);
+  font-size: var(--text-hero);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+}
+
+.u-display {
+  font-family: var(--font-sans);
+  font-size: var(--text-display);
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  font-weight: 600;
+}
+
+/* Dlouhé čtené texty */
+.prose-serif {
+  font-family: var(--font-serif);
+  font-size: clamp(1.1rem, 1.6vw, 1.35rem);
+  line-height: 1.7;
+  color: color-mix(in oklab, var(--color-paper) 92%, transparent);
+}
+.prose-serif p {
+  margin: 0 0 1.25em;
+  max-width: 62ch;
+}

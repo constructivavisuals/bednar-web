@@ -1,0 +1,21 @@
+# build
+dist/
+.astro/
+
+# deps
+node_modules/
+
+# logs
+npm-debug.log*
+*.log
+
+# env
+.env
+.env.*
+!.env.example
+
+# deploy
+.vercel/
+
+# os
+.DS_Store
