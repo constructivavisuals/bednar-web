@@ -29,7 +29,7 @@ const items = imgSeries('ooc').map((src, i) => ({
 
     <div class="ooc__gallery">
       <Reveal>
-        <Gallery items={items} columns={2} />
+        <Gallery items={items} columns={3} />
       </Reveal>
     </div>
   </div>
@@ -47,18 +47,14 @@ const items = imgSeries('ooc').map((src, i) => ({
       grid-template-columns: minmax(260px, 0.8fr) 1.4fr;
       align-items: start;
     }
-    /* Text drží nahoře při scrollu galerie */
-    .ooc__text {
+    /* Galerie drží fixní, scrolluje jen text vedle */
+    .ooc__gallery {
       position: sticky;
       top: 6rem;
+      align-self: start;
     }
   }
   .ooc__prose {
     margin-top: 1.75rem;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .ooc__text {
-      position: static;
-    }
   }
 </style>
