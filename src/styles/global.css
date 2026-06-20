@@ -54,6 +54,8 @@ html {
 body {
   margin: 0;
   min-height: 100svh;
+  /* prostor dole, ať poslední obsah neskončí pod plovoucím dockem */
+  padding-bottom: clamp(5rem, 10vh, 7rem);
   background-color: var(--color-ink);
   color: var(--color-paper);
   font-family: var(--font-sans);

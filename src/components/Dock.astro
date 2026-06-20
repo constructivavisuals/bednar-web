@@ -1,0 +1,277 @@
+---
+// macOS-style dock: spodní lišta „app" ikon sekcí s magnifikací pod kurzorem.
+// Jen transform (GPU), rAF-throttled. Reduced-motion / dotyk → statické, bez zvětšení.
+import { sections, localizedPath, navLabel, type Locale, type SectionKey } from '../i18n/config';
+
+interface Props {
+  locale: Locale;
+  sectionKey: SectionKey;
+}
+const { locale, sectionKey } = Astro.props;
+
+// Ikona + barva dlaždice pro každou sekci (squircle jako app ikona).
+const icons: Record<SectionKey, { color: string; from: string; path: string }> = {
+  home: {
+    color: '#3f74d6',
+    from: '#5b8af0',
+    path: '<path d="M4 11 12 4l8 7"/><path d="M6 10v9h12v-9"/>',
+  },
+  bio: {
+    color: '#2f9e9e',
+    from: '#46c2c2',
+    path: '<circle cx="12" cy="8" r="3.2"/><path d="M5.5 19a6.6 6.6 0 0 1 13 0"/>',
+  },
+  reference: {
+    color: '#7b54c6',
+    from: '#9e78e6',
+    path: '<path d="M7 4h7l4 4v12H7z"/><path d="M9.5 11h5M9.5 14h5M9.5 17h3"/>',
+  },
+  glass: {
+    color: '#2f8fb0',
+    from: '#49b3d6',
+    path: '<path d="M12 3 21 12 12 21 3 12z"/>',
+  },
+  ooc: {
+    color: '#c0476f',
+    from: '#e06b92',
+    path: '<path d="M4 11 11 4h7v7l-7 7z"/><circle cx="14.5" cy="8.5" r="1.3"/>',
+  },
+  studio: {
+    color: '#c39a3b',
+    from: '#e3bb5b',
+    path: '<path d="M12 3a9 9 0 1 0 0 18c1.4 0 2-.9 2-1.8 0-1-1-1.4-1-2.4 0-.9.8-1.6 1.8-1.6H17a3.5 3.5 0 0 0 3.5-3.5C20.5 6.4 16.7 3 12 3Z"/><circle cx="7.6" cy="11" r="1"/><circle cx="10" cy="7.6" r="1"/><circle cx="14.6" cy="7.6" r="1"/>',
+  },
+  news: {
+    color: '#3ba17a',
+    from: '#55c498',
+    path: '<path d="M4 10v4l9 4V6z"/><path d="M14.5 9a4 4 0 0 1 0 6"/>',
+  },
+  contact: {
+    color: '#c64a4a',
+    from: '#e06a6a',
+    path: '<path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/>',
+  },
+};
+
+const items = sections; // home + 7 sekcí, v pořadí
+---
+
+<nav class="dock" aria-label="Navigace" data-dock>
+  <ul class="dock__list">
+    {
+      items.map((s) => {
+        const active = s.key === sectionKey;
+        const ic = icons[s.key];
+        const label = navLabel(s.key, locale);
+        return (
+          <li class="dock__cell">
+            <a
+              class:list={['dock__item', { 'dock__item--active': active }]}
+              href={localizedPath(s.key, locale)}
+              aria-label={label}
+              aria-current={active ? 'page' : undefined}
+              data-dock-item
+            >
+              <span class="dock__tip" aria-hidden="true">{label}</span>
+              <span class="dock__icon" style={`--c:${ic.color};--c2:${ic.from}`}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" set:html={ic.path} />
+              </span>
+              <span class="dock__dot" aria-hidden="true" />
+            </a>
+          </li>
+        );
+      })
+    }
+  </ul>
+</nav>
+
+<style>
+  .dock {
+    position: fixed;
+    left: 50%;
+    bottom: clamp(0.75rem, 2vh, 1.5rem);
+    transform: translateX(-50%);
+    z-index: 60;
+    max-width: calc(100vw - 1.5rem);
+  }
+  .dock__list {
+    display: flex;
+    align-items: flex-end;
+    gap: clamp(0.3rem, 0.8vw, 0.55rem);
+    margin: 0;
+    padding: 0.5rem 0.7rem;
+    list-style: none;
+    border-radius: 22px;
+    background: color-mix(in oklab, var(--color-ink-soft) 72%, transparent);
+    border: 1px solid color-mix(in oklab, var(--color-paper) 12%, transparent);
+    box-shadow:
+      0 1px 0 color-mix(in oklab, var(--color-paper) 14%, transparent) inset,
+      0 18px 50px -12px rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(16px) saturate(1.2);
+    -webkit-backdrop-filter: blur(16px) saturate(1.2);
+    overflow-x: auto;
+    overflow-y: visible;
+    scrollbar-width: none;
+  }
+  .dock__list::-webkit-scrollbar {
+    display: none;
+  }
+  .dock__cell {
+    display: flex;
+  }
+
+  .dock__item {
+    position: relative;
+    display: block;
+    transform-origin: bottom center;
+    will-change: transform;
+    /* JS plynule mění transform; přechod jen pro návrat do klidu. */
+    transition: transform 0.18s var(--ease-out-soft);
+  }
+
+  .dock__icon {
+    display: grid;
+    place-items: center;
+    width: clamp(40px, 6.2vw, 52px);
+    height: clamp(40px, 6.2vw, 52px);
+    border-radius: 27%;
+    background: linear-gradient(160deg, var(--c2), var(--c));
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.35) inset,
+      0 6px 14px -6px rgba(0, 0, 0, 0.6);
+  }
+  .dock__icon svg {
+    width: 58%;
+    height: 58%;
+  }
+
+  /* Aktivní tečka pod ikonou */
+  .dock__dot {
+    position: absolute;
+    left: 50%;
+    bottom: -6px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--color-paper);
+    transform: translateX(-50%) scale(0);
+    transition: transform 0.2s var(--ease-out-soft);
+  }
+  .dock__item--active .dock__dot {
+    transform: translateX(-50%) scale(1);
+  }
+
+  /* Tooltip nad ikonou */
+  .dock__tip {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 10px);
+    transform: translateX(-50%) translateY(4px);
+    padding: 0.3rem 0.6rem;
+    border-radius: 7px;
+    font-family: var(--font-sans);
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    color: var(--color-paper);
+    background: color-mix(in oklab, var(--color-ink) 92%, transparent);
+    border: 1px solid var(--color-ink-line);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity 0.18s var(--ease-out-soft),
+      transform 0.18s var(--ease-out-soft);
+  }
+  .dock__item:hover .dock__tip,
+  .dock__item:focus-visible .dock__tip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dock__item,
+    .dock__dot,
+    .dock__tip {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  // Magnifikace pod kurzorem (jako macOS dock). Jen transform, rAF-throttled.
+  let ac: AbortController | null = null;
+
+  function initDock() {
+    ac?.abort();
+    ac = new AbortController();
+    const { signal } = ac;
+
+    const dock = document.querySelector<HTMLElement>('[data-dock]');
+    if (!dock) return;
+    const items = Array.from(dock.querySelectorAll<HTMLElement>('[data-dock-item]'));
+    if (!items.length) return;
+
+    // Bez zvětšení při reduced-motion nebo na dotykových zařízeních (žádný hover).
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const fine = matchMedia('(pointer: fine)').matches;
+    if (reduce || !fine) return;
+
+    const SIGMA = 65; // šířka vlivu (px)
+    const BOOST = 0.55; // max zvětšení (+55 %)
+    const SPREAD = 14; // rozestup sousedů (px)
+    const LIFT = 10; // nadzvednutí (px)
+
+    let centers: number[] = [];
+    const measure = () => {
+      centers = items.map((it) => {
+        const r = it.getBoundingClientRect();
+        return r.left + r.width / 2;
+      });
+    };
+
+    let raf = 0;
+    let pointerX: number | null = null;
+    const apply = () => {
+      raf = 0;
+      items.forEach((it, i) => {
+        if (pointerX == null) {
+          it.style.transform = '';
+          return;
+        }
+        const d = pointerX - centers[i];
+        const inf = Math.exp(-(d * d) / (2 * SIGMA * SIGMA));
+        const scale = 1 + BOOST * inf;
+        const tx = -Math.sign(d) * SPREAD * inf;
+        const ty = -LIFT * inf;
+        it.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+      });
+    };
+    const schedule = () => {
+      if (!raf) raf = requestAnimationFrame(apply);
+    };
+
+    measure();
+    dock.addEventListener(
+      'pointermove',
+      (e) => {
+        pointerX = e.clientX;
+        schedule();
+      },
+      { signal }
+    );
+    dock.addEventListener(
+      'pointerleave',
+      () => {
+        pointerX = null;
+        schedule();
+      },
+      { signal }
+    );
+    window.addEventListener('resize', measure, { signal });
+    window.addEventListener('scroll', measure, { signal, passive: true });
+  }
+
+  // astro:page-load se spustí i při prvním načtení → žádný zvlášť volaný init.
+  document.addEventListener('astro:page-load', initDock);
+  document.addEventListener('astro:before-swap', () => ac?.abort());
+</script>

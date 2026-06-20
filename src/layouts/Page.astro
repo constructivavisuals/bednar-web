@@ -1,6 +1,7 @@
 ---
 import Base from './Base.astro';
 import Header from '../components/Header.astro';
+import Dock from '../components/Dock.astro';
 import { navLabel, type Locale, type SectionKey } from '../i18n/config';
 
 interface Props {
@@ -40,6 +41,8 @@ const hasContent = Astro.slots.has('default');
       </main>
     )
   }
+
+  <Dock locale={locale} sectionKey={sectionKey} />
 </Base>
 
 <style>

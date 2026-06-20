@@ -46,10 +46,6 @@ const { poster, posterAlt, video, eyebrow, title, subtitle } = Astro.props;
     <h1 class="hero__title u-hero" data-hero-title set:html={title} />
     {subtitle && <p class="hero__subtitle" data-hero-fade>{subtitle}</p>}
   </div>
-
-  <a class="hero__cue" href="#dal" aria-label="Posunout dolů" data-hero-fade>
-    <span class="hero__cue-line"></span>
-  </a>
 </section>
 
 <style>
@@ -134,38 +130,8 @@ const { poster, posterAlt, video, eyebrow, title, subtitle } = Astro.props;
     color: color-mix(in oklab, var(--color-paper) 88%, transparent);
   }
 
-  /* Scroll cue */
-  .hero__cue {
-    position: absolute;
-    z-index: 2;
-    bottom: clamp(1.5rem, 4vh, 3rem);
-    left: 50%;
-    transform: translateX(-50%);
-    width: 28px;
-    height: 46px;
-    border: 1px solid color-mix(in oklab, var(--color-paper) 45%, transparent);
-    border-radius: 999px;
-    display: flex;
-    justify-content: center;
-    padding-top: 8px;
-  }
-  .hero__cue-line {
-    width: 2px;
-    height: 8px;
-    background: var(--color-paper);
-    border-radius: 2px;
-    animation: cue 1.8s var(--ease-out-soft) infinite;
-  }
-  @keyframes cue {
-    0% { transform: translateY(0); opacity: 0; }
-    30% { opacity: 1; }
-    70% { transform: translateY(14px); opacity: 0; }
-    100% { opacity: 0; }
-  }
-
   @media (prefers-reduced-motion: reduce) {
     .hero__video { transition: none; }
-    .hero__cue-line { animation: none; }
     .hero--drift :global(.hero__poster) { animation: none; }
   }
 </style>
