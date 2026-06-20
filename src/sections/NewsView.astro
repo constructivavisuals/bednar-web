@@ -14,27 +14,47 @@ const c = getContent(locale);
 const bgAlt = locale === 'cs' ? 'Výstavní prostor' : 'Exhibition space';
 ---
 
-<SectionBg image={img('news-myslbek')} alt={bgAlt} parallax={0.18} align="center" scrim={0.66}>
-  <div class="reading section-pad">
-    <Reveal as="p" class="eyebrow">{navLabel('news', locale)}</Reveal>
+<SectionBg image={img('news-myslbek')} alt={bgAlt} parallax={0.18} align="center" scrim={0.4}>
+  <div class="news-wrap section-pad">
+    <div class="news-card">
+      <Reveal as="p" class="eyebrow">{navLabel('news', locale)}</Reveal>
 
-    {
-      c.news.exhibitions.map((ex) => (
-        <article class="exhibition">
-          <Reveal as="h2" class="exhibition__title">{ex.title}</Reveal>
-          <Reveal as="p" class="exhibition__meta">
-            <span class="exhibition__dates">{ex.dates}</span>
-            <span class="exhibition__venue">{ex.venue}</span>
-          </Reveal>
-          {ex.body.map((p) => <Reveal as="p" class="prose-serif">{p}</Reveal>)}
-          <Reveal as="p" class="signature">{ex.signature}</Reveal>
-        </article>
-      ))
-    }
+      {
+        c.news.exhibitions.map((ex) => (
+          <article class="exhibition">
+            <Reveal as="h2" class="exhibition__title">{ex.title}</Reveal>
+            <Reveal as="p" class="exhibition__meta">
+              <span class="exhibition__dates">{ex.dates}</span>
+              <span class="exhibition__venue">{ex.venue}</span>
+            </Reveal>
+            {ex.body.map((p) => <Reveal as="p" class="prose-serif">{p}</Reveal>)}
+            <Reveal as="p" class="signature">{ex.signature}</Reveal>
+          </article>
+        ))
+      }
+    </div>
   </div>
 </SectionBg>
 
 <style>
+  .news-wrap {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  /* Čitelný rámeček nad rušnou fotkou */
+  .news-card {
+    width: 100%;
+    max-width: 640px;
+    padding: clamp(1.75rem, 4vw, 3rem);
+    border-radius: 14px;
+    background: color-mix(in oklab, var(--color-ink) 78%, transparent);
+    border: 1px solid color-mix(in oklab, var(--color-paper) 12%, transparent);
+    box-shadow: 0 30px 70px -24px rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(14px) saturate(1.1);
+    -webkit-backdrop-filter: blur(14px) saturate(1.1);
+  }
+
   .exhibition + .exhibition {
     margin-top: 4rem;
     padding-top: 3rem;
