@@ -215,33 +215,39 @@ const homeHref = localizedPath('home', locale);
 
 <script>
   // Mobilní menu — re-inicializace i po View Transitions přechodech.
-  function initNav() {
+  const closeMenu = () => {
+    const header = document.querySelector('.site-header');
+    const toggle = document.querySelector('[data-nav-toggle]');
+    if (!header) return;
+    header.removeAttribute('data-open');
+    toggle?.setAttribute('aria-expanded', 'false');
+    toggle?.setAttribute('aria-label', 'Otevřít menu');
+  };
+
+  // Esc zavře menu — navázáno na document JEN JEDNOU (přežívá přechody, neleakuje).
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeMenu();
+  });
+
+  // Vazba na (po přechodu nově vykreslené) prvky toggle/nav.
+  function bindNav() {
     const header = document.querySelector<HTMLElement>('.site-header');
     const toggle = document.querySelector<HTMLButtonElement>('[data-nav-toggle]');
     const nav = document.querySelector<HTMLElement>('[data-nav]');
     if (!header || !toggle || !nav) return;
 
-    const close = () => {
-      header.removeAttribute('data-open');
-      toggle.setAttribute('aria-expanded', 'false');
-      toggle.setAttribute('aria-label', 'Otevřít menu');
-    };
-    const open = () => {
-      header.setAttribute('data-open', '');
-      toggle.setAttribute('aria-expanded', 'true');
-      toggle.setAttribute('aria-label', 'Zavřít menu');
-    };
-
     toggle.addEventListener('click', () => {
-      header.hasAttribute('data-open') ? close() : open();
+      if (header.hasAttribute('data-open')) {
+        closeMenu();
+      } else {
+        header.setAttribute('data-open', '');
+        toggle.setAttribute('aria-expanded', 'true');
+        toggle.setAttribute('aria-label', 'Zavřít menu');
+      }
     });
-    // Klik na odkaz nebo Esc menu zavře.
-    nav.querySelectorAll('a').forEach((a) => a.addEventListener('click', close));
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') close();
-    });
+    nav.querySelectorAll('a').forEach((a) => a.addEventListener('click', closeMenu));
   }
 
-  initNav();
-  document.addEventListener('astro:page-load', initNav);
+  // astro:page-load se spustí i při prvním načtení → žádný zvlášť volaný init (žádný dvojí bind).
+  document.addEventListener('astro:page-load', bindNav);
 </script>

@@ -37,6 +37,14 @@ const {
 
     <!-- Plynulé přechody mezi stránkami -->
     <ClientRouter />
+
+    <!-- Před vykreslením: pokud poběží animace, skryj reveal prvky přes CSS (žádný flash).
+         Bez JS / při reduced-motion se třída nenastaví a obsah je rovnou viditelný. -->
+    <script is:inline>
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('has-motion');
+      }
+    </script>
   </head>
   <body>
     <slot />

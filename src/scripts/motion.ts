@@ -16,10 +16,13 @@ const reduce = () => mq.matches;
 
 let lenis: Lenis | null = null;
 let tickerFn: ((time: number) => void) | null = null;
+// Tweeny bez ScrollTriggeru (hero intro) si držíme, ať je umíme cíleně zabít.
+let looseTweens: gsap.core.Tween[] = [];
 
 function teardown() {
   ScrollTrigger.getAll().forEach((t) => t.kill());
-  gsap.killTweensOf('*');
+  looseTweens.forEach((t) => t.kill());
+  looseTweens = [];
   if (tickerFn) {
     gsap.ticker.remove(tickerFn);
     tickerFn = null;
@@ -88,28 +91,43 @@ function initParallax() {
 function initHeroIntro() {
   const title = document.querySelector<HTMLElement>('[data-hero-title]');
   const sub = document.querySelectorAll<HTMLElement>('[data-hero-fade]');
+  // fromTo (ne from): CSS .has-motion drží opacity:0, takže explicitně animujeme DO opacity:1.
   if (title) {
-    gsap.from(title, { y: 32, opacity: 0, duration: 1.1, ease: 'power3.out', delay: 0.15 });
+    looseTweens.push(
+      gsap.fromTo(title, { y: 32, opacity: 0 }, { y: 0, opacity: 1, duration: 1.1, ease: 'power3.out', delay: 0.15 })
+    );
   }
   if (sub.length) {
-    gsap.from(sub, { y: 18, opacity: 0, duration: 0.9, ease: 'power3.out', delay: 0.5, stagger: 0.12 });
+    looseTweens.push(
+      gsap.fromTo(sub, { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, ease: 'power3.out', delay: 0.5, stagger: 0.12 })
+    );
   }
+}
+
+// Vlastní tvorba animací — běží až po vykreslení nové stránky (viz setup).
+function build() {
+  initLenis();
+  initReveal();
+  initParallax();
+  initHeroIntro();
+  ScrollTrigger.refresh();
 }
 
 function setup() {
   teardown();
 
   if (reduce()) {
-    // Reduced motion: nic nehýbeme. Ujisti se, že případné reveal prvky jsou viditelné.
+    // Reduced motion: nic nehýbeme. Reveal prvky musí být viditelné.
+    document.documentElement.classList.remove('has-motion');
     gsap.set('[data-reveal]', { clearProps: 'all', opacity: 1, y: 0 });
     return;
   }
 
-  initLenis();
-  initReveal();
-  initParallax();
-  initHeroIntro();
-  ScrollTrigger.refresh();
+  // .has-motion (nastaveno inline skriptem v <head>) drží reveal prvky skryté přes CSS,
+  // takže nebliknou. Vlastní animace odložíme o 2 snímky, ať se nová stránka nejdřív
+  // vykreslí — klik na navigaci tím není blokovaný těžkým ScrollTrigger.refresh().
+  document.documentElement.classList.add('has-motion');
+  requestAnimationFrame(() => requestAnimationFrame(build));
 }
 
 // Inicializace + re-init po přechodech; úklid před výměnou stránky.

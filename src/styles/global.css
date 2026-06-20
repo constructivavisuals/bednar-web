@@ -102,6 +102,15 @@ video {
   }
 }
 
+/* Skryj animované prvky před prvním vykreslením (třídu nastaví inline skript jen
+   když poběží animace). Zabraňuje bliknutí „viditelné → skryté → animované"
+   při každém přechodu mezi stránkami. */
+.has-motion [data-reveal],
+.has-motion [data-hero-title],
+.has-motion [data-hero-fade] {
+  opacity: 0;
+}
+
 /* Utility: editorial nadpisy */
 .u-hero {
   font-family: var(--font-display);
