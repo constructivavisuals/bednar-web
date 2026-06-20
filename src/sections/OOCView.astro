@@ -39,12 +39,13 @@ const items = imgSeries('ooc').map((src, i) => ({
   .ooc__grid {
     display: grid;
     gap: clamp(2rem, 5vw, 4rem);
-    max-width: 1300px;
+    max-width: 1760px;
     margin-inline: auto;
   }
   @media (min-width: 960px) {
     .ooc__grid {
-      grid-template-columns: minmax(260px, 0.8fr) 1.4fr;
+      /* užší čtený sloupec + široká galerie, ať fotky pokryjí celou pravou stranu */
+      grid-template-columns: minmax(300px, 0.62fr) 2fr;
       align-items: start;
     }
     /* Galerie drží fixní, scrolluje jen text vedle */
