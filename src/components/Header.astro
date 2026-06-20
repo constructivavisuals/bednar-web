@@ -1,0 +1,247 @@
+---
+import {
+  sections,
+  localizedPath,
+  navLabel,
+  type Locale,
+  type SectionKey,
+} from '../i18n/config';
+import LangSwitcher from './LangSwitcher.astro';
+
+interface Props {
+  locale: Locale;
+  sectionKey: SectionKey;
+}
+
+const { locale, sectionKey } = Astro.props;
+const navItems = sections.filter((s) => s.inNav);
+const homeHref = localizedPath('home', locale);
+---
+
+<header class="site-header">
+  <a class="wordmark" href={homeHref} aria-label="Václav Bednář ART — domů">
+    VÁCLAV BEDNÁŘ <span class="wordmark__accent">ART</span>
+  </a>
+
+  <button
+    class="nav-toggle"
+    type="button"
+    aria-expanded="false"
+    aria-controls="primary-nav"
+    aria-label="Otevřít menu"
+    data-nav-toggle
+  >
+    <span class="nav-toggle__bar"></span>
+    <span class="nav-toggle__bar"></span>
+  </button>
+
+  <nav id="primary-nav" class="primary-nav" aria-label="Hlavní navigace" data-nav>
+    <ul class="primary-nav__list">
+      {
+        navItems.map((s) => {
+          const active = s.key === sectionKey;
+          return (
+            <li>
+              <a
+                href={localizedPath(s.key, locale)}
+                class:list={['nav-link', { 'nav-link--active': active }]}
+                aria-current={active ? 'page' : undefined}
+              >
+                {navLabel(s.key, locale)}
+              </a>
+            </li>
+          );
+        })
+      }
+    </ul>
+    <div class="primary-nav__lang">
+      <LangSwitcher sectionKey={sectionKey} locale={locale} />
+    </div>
+  </nav>
+</header>
+
+<style>
+  .site-header {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: clamp(1rem, 2.5vw, 1.75rem) clamp(1.25rem, 4vw, 3rem);
+    /* jemný scrim shora pro čitelnost přes celoplošná pozadí */
+    background: linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--color-ink) 80%, transparent),
+      transparent
+    );
+  }
+
+  .wordmark {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+    letter-spacing: 0.14em;
+    color: var(--color-paper);
+    white-space: nowrap;
+    transition: opacity 0.25s var(--ease-out-soft);
+  }
+  .wordmark:hover {
+    opacity: 0.8;
+  }
+  .wordmark__accent {
+    color: var(--color-accent);
+  }
+
+  .primary-nav {
+    display: flex;
+    align-items: center;
+    gap: clamp(1.5rem, 3vw, 2.75rem);
+  }
+  .primary-nav__list {
+    display: flex;
+    align-items: center;
+    gap: clamp(1rem, 2vw, 1.9rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .nav-link {
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--color-muted);
+    transition: color 0.25s var(--ease-out-soft);
+    position: relative;
+  }
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -0.35rem;
+    width: 100%;
+    height: 1px;
+    background: var(--color-accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s var(--ease-out-soft);
+  }
+  .nav-link:hover {
+    color: var(--color-paper);
+  }
+  .nav-link:hover::after,
+  .nav-link--active::after {
+    transform: scaleX(1);
+  }
+  .nav-link--active {
+    color: var(--color-paper);
+  }
+
+  /* ── Mobilní hamburger (skryté na desktopu) ── */
+  .nav-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    z-index: 60;
+  }
+  .nav-toggle__bar {
+    display: block;
+    width: 26px;
+    height: 2px;
+    margin: 0 auto;
+    background: var(--color-paper);
+    transition: transform 0.3s var(--ease-out-soft), opacity 0.2s var(--ease-out-soft);
+  }
+
+  @media (max-width: 820px) {
+    .nav-toggle {
+      display: flex;
+    }
+    .primary-nav {
+      position: fixed;
+      inset: 0;
+      flex-direction: column;
+      justify-content: center;
+      gap: 2.5rem;
+      background: color-mix(in oklab, var(--color-ink) 96%, transparent);
+      backdrop-filter: blur(8px);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-8px);
+      transition:
+        opacity 0.3s var(--ease-out-soft),
+        transform 0.3s var(--ease-out-soft),
+        visibility 0s linear 0.3s;
+    }
+    .primary-nav__list {
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+    .nav-link {
+      font-size: 1.4rem;
+    }
+
+    /* otevřený stav (přepíná JS přes data-open na <header>) */
+    :global(.site-header[data-open]) .primary-nav {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      transition-delay: 0s;
+    }
+    :global(.site-header[data-open]) .nav-toggle__bar:nth-child(1) {
+      transform: translateY(4px) rotate(45deg);
+    }
+    :global(.site-header[data-open]) .nav-toggle__bar:nth-child(2) {
+      transform: translateY(-4px) rotate(-45deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav-link::after,
+    .primary-nav,
+    .nav-toggle__bar {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  // Mobilní menu — re-inicializace i po View Transitions přechodech.
+  function initNav() {
+    const header = document.querySelector<HTMLElement>('.site-header');
+    const toggle = document.querySelector<HTMLButtonElement>('[data-nav-toggle]');
+    const nav = document.querySelector<HTMLElement>('[data-nav]');
+    if (!header || !toggle || !nav) return;
+
+    const close = () => {
+      header.removeAttribute('data-open');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', 'Otevřít menu');
+    };
+    const open = () => {
+      header.setAttribute('data-open', '');
+      toggle.setAttribute('aria-expanded', 'true');
+      toggle.setAttribute('aria-label', 'Zavřít menu');
+    };
+
+    toggle.addEventListener('click', () => {
+      header.hasAttribute('data-open') ? close() : open();
+    });
+    // Klik na odkaz nebo Esc menu zavře.
+    nav.querySelectorAll('a').forEach((a) => a.addEventListener('click', close));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') close();
+    });
+  }
+
+  initNav();
+  document.addEventListener('astro:page-load', initNav);
+</script>

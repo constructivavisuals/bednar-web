@@ -1,0 +1,75 @@
+---
+import { locales, localeMeta, localizedPath, type Locale, type SectionKey } from '../i18n/config';
+
+interface Props {
+  sectionKey: SectionKey;
+  locale: Locale;
+}
+
+const { sectionKey, locale } = Astro.props;
+---
+
+<nav class="lang" aria-label="Volba jazyka">
+  {
+    locales.map((l) => {
+      const active = l === locale;
+      return (
+        <a
+          href={localizedPath(sectionKey, l)}
+          class:list={['lang__item', { 'lang__item--active': active }]}
+          hreflang={l}
+          lang={l}
+          aria-label={localeMeta[l].name}
+          aria-current={active ? 'true' : undefined}
+        >
+          <span class="lang__flag">{localeMeta[l].flag}</span>
+          <span class="lang__code">{l}</span>
+        </a>
+      );
+    })
+  }
+</nav>
+
+<style>
+  .lang {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .lang__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    opacity: 0.7;
+    transition:
+      opacity 0.25s var(--ease-out-soft),
+      color 0.25s var(--ease-out-soft),
+      background-color 0.25s var(--ease-out-soft);
+  }
+  .lang__item:hover {
+    opacity: 1;
+    color: var(--color-paper);
+  }
+  .lang__item--active {
+    opacity: 1;
+    color: var(--color-paper);
+    background: color-mix(in oklab, var(--color-paper) 10%, transparent);
+  }
+  .lang__flag {
+    font-size: 0.95rem;
+    line-height: 1;
+  }
+  /* Na úzkých displejích jen vlaječky, kód jazyka schovat. */
+  @media (max-width: 480px) {
+    .lang__code {
+      display: none;
+    }
+  }
+</style>

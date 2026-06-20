@@ -1,0 +1,79 @@
+---
+import Base from './Base.astro';
+import Header from '../components/Header.astro';
+import { navLabel, type Locale, type SectionKey } from '../i18n/config';
+
+interface Props {
+  locale: Locale;
+  sectionKey: SectionKey;
+  title?: string;
+  description?: string;
+}
+
+const { locale, sectionKey, title, description } = Astro.props;
+
+const label = navLabel(sectionKey, locale);
+const pageTitle =
+  title ?? (sectionKey === 'home' ? 'Václav Bednář ART' : `${label} — Václav Bednář ART`);
+
+// Drobný UI slovník (placeholdery kroku 2; obsah přijde v kroku 4).
+const ui = {
+  cs: { soon: 'Připravujeme', section: 'Sekce' },
+  en: { soon: 'Coming soon', section: 'Section' },
+} as const;
+const t = ui[locale];
+
+const hasContent = Astro.slots.has('default');
+---
+
+<Base title={pageTitle} description={description} lang={locale}>
+  <Header locale={locale} sectionKey={sectionKey} />
+
+  {
+    hasContent ? (
+      <slot />
+    ) : (
+      <main class="placeholder">
+        <p class="placeholder__eyebrow">{t.section}</p>
+        <h1 class="placeholder__title">{label}</h1>
+        <p class="placeholder__note">{t.soon}</p>
+      </main>
+    )
+  }
+</Base>
+
+<style>
+  .placeholder {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    padding: 6rem 1.5rem;
+    text-align: center;
+  }
+  .placeholder__eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    margin: 0;
+  }
+  .placeholder__title {
+    font-family: var(--font-sans);
+    font-size: var(--text-display);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1;
+    margin: 0;
+  }
+  .placeholder__note {
+    font-size: 0.85rem;
+    color: var(--color-muted);
+    border: 1px solid var(--color-ink-line);
+    border-radius: 999px;
+    padding: 0.4rem 1rem;
+    margin: 0.5rem 0 0;
+  }
+</style>
