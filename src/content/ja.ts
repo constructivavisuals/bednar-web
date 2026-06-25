@@ -176,9 +176,9 @@ export const ja: SiteContent = {
   },
 
   contact: {
-    email: 'info@badnart.cz',
+    email: 'info@bednart.cz',
     phone: '+420 608 832 230',
-    instagram: { label: 'Instagram', href: '#' },
-    facebook: { label: 'Facebook — Václav Bednář', href: '#' },
+    instagram: { label: 'Instagram', href: 'https://www.instagram.com/bednar.vaclav/' },
+    facebook: { label: 'Facebook — Václav Bednář', href: 'https://www.facebook.com/bednar.vaclav.74/' },
   },
 };
